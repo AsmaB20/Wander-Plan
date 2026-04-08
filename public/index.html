@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WanderPlan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-type">✦ Wander<span class="logo-dot">Plan</span></div>
+      <div class="logo-sub">Travel Planner</div>
+    </div>
+    <div class="sidebar-trips" id="tripList"></div>
+    <div class="sidebar-foot">
+      <button class="btn-new-trip" onclick="openNewTrip()">＋ New Trip</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+    <div class="empty" id="emptyState">
+      <div class="empty-globe">✈️</div>
+      <h2>Where to<br/>next?</h2>
+      <p>Create a trip to start organizing your adventure — days, hotels, places, costs, and AI-powered recommendations.</p>
+      <button class="btn-start" onclick="openNewTrip()">＋ Plan a Trip</button>
+    </div>
+    <div id="tripView" style="display:none;"></div>
+  </main>
+</div>
+
+<!-- ══ NEW TRIP MODAL ══════════════════════════════════════ -->
+<div class="veil" id="newTripVeil" style="display:none;" onclick="if(event.target===this)closeNewTrip()">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Plan a New Trip ✈️</h2>
+      <p>Give your adventure a name and destination.</p>
+    </div>
+    <div class="modal-body">
+      <div class="fl"><label>Trip Name</label>
+        <input class="fc" id="ntName" placeholder="e.g. Summer in Morocco 🌴" /></div>
+      <div class="fl"><label>Destination City / Country</label>
+        <input class="fc" id="ntCity" placeholder="e.g. Marrakech, Morocco" /></div>
+      <div class="row2">
+        <div class="fl"><label>Start Date</label><input class="fc" type="date" id="ntStart" /></div>
+        <div class="fl"><label>End Date</label><input class="fc" type="date" id="ntEnd" /></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal btn-cancel" onclick="closeNewTrip()">Cancel</button>
+      <button class="btn-modal btn-go" onclick="createTrip()">Create Trip →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AI PREFS MODAL ═════════════════════════════════════ -->
+<div class="veil" id="aiVeil" style="display:none;" onclick="if(event.target===this)closeAi()">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>✦ AI Recommendations</h2>
+      <p>Personalize suggestions or skip for a general pick.</p>
+    </div>
+    <div class="modal-body">
+      <div class="fl"><label>Destination</label><div class="city-badge" id="aiCity">—</div></div>
+      <div class="fl"><label>Group Size</label>
+        <div class="chips" id="cPeople">
+          <div class="chip" onclick="pick('people','Solo')">Solo</div>
+          <div class="chip" onclick="pick('people','2 people')">Couple</div>
+          <div class="chip" onclick="pick('people','Family')">Family</div>
+          <div class="chip" onclick="pick('people','Group')">Group</div>
+        </div></div>
+      <div class="fl"><label>Travel Style</label>
+        <div class="chips" id="cType">
+          <div class="chip" onclick="pick('type','Cultural')">🏛 Cultural</div>
+          <div class="chip" onclick="pick('type','Foodie')">🍜 Foodie</div>
+          <div class="chip" onclick="pick('type','Nature')">🌿 Nature</div>
+          <div class="chip" onclick="pick('type','Adventure')">🧗 Adventure</div>
+          <div class="chip" onclick="pick('type','Shopping')">🛍 Shopping</div>
+          <div class="chip" onclick="pick('type','Relaxing')">🌅 Relaxing</div>
+        </div></div>
+      <div class="fl" style="margin-bottom:0;"><label>Budget</label>
+        <div class="chips" id="cBudget">
+          <div class="chip" onclick="pick('budget','Budget')">💰 Budget</div>
+          <div class="chip" onclick="pick('budget','Moderate')">💳 Moderate</div>
+          <div class="chip" onclick="pick('budget','Luxury')">💎 Luxury</div>
+        </div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-modal btn-cancel" onclick="closeAi()">Cancel</button>
+      <button class="btn-modal btn-skip" onclick="fetchSuggestions(true)">Skip →</button>
+      <button class="btn-modal btn-go" onclick="fetchSuggestions(false)">✦ Recommend</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AI RESULTS MODAL ═══════════════════════════════════ -->
+<div class="veil" id="aiResVeil" style="display:none;" onclick="if(event.target===this)closeAiRes()">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-head">
+      <h2>✦ Recommended Places</h2>
+      <p id="aiResSub">Pick the spots you'd like to add.</p>
+    </div>
+    <div class="modal-body" id="aiResBody"></div>
+    <div class="modal-foot">
+      <button class="btn-modal btn-cancel" onclick="closeAiRes()">Cancel</button>
+      <button class="btn-modal btn-add-sugg" id="btnAddSugg" onclick="addSuggestions()">Add Selected →</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
