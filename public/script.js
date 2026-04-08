@@ -26,9 +26,9 @@ const load = () => {
 //  HELPERS
 // ──────────────────────────────────────────────
 const uid = () => Math.random().toString(36).slice(2, 9);
-const esc = s => (s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const esc = s => (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const trip = () => trips.find(t => t.id === activeId);
-const day  = id => trip()?.days.find(d => d.id === id);
+const day = id => trip()?.days.find(d => d.id === id);
 
 function stats(tr) {
   let total = 0, done = 0, all = 0;
@@ -54,10 +54,10 @@ function renderSidebar() {
     (trips.length ? '<div class="sidebar-label">My Trips</div>' : '') +
     trips.map(t => {
       const s = stats(t);
-      return `<div class="trip-row ${t.id===activeId?'active':''}" onclick="select('${t.id}')">
+      return `<div class="trip-row ${t.id === activeId ? 'active' : ''}" onclick="select('${t.id}')">
         <div class="trip-row-inner">
           <div class="trip-row-name">${esc(t.name)}</div>
-          <div class="trip-row-meta">${t.days.length} day${t.days.length!==1?'s':''} · $${s.total}</div>
+          <div class="trip-row-meta">${t.days.length} day${t.days.length !== 1 ? 's' : ''} · $${s.total}</div>
         </div>
         <button class="trip-del" onclick="delTrip(event,'${t.id}')">✕</button>
       </div>`;
@@ -67,9 +67,9 @@ function renderSidebar() {
 function renderMain() {
   const tr = trip();
   const empty = document.getElementById('emptyState');
-  const view  = document.getElementById('tripView');
-  if (!tr) { empty.style.display='flex'; view.style.display='none'; return; }
-  empty.style.display='none'; view.style.display='block';
+  const view = document.getElementById('tripView');
+  if (!tr) { empty.style.display = 'flex'; view.style.display = 'none'; return; }
+  empty.style.display = 'none'; view.style.display = 'block';
   const s = stats(tr);
   view.innerHTML = `
     <div class="trip-hero">
@@ -89,7 +89,7 @@ function renderMain() {
           <div class="hero-stats">
             <div class="stat-pill budget" id="spBudget">💰 $${s.total} total</div>
             <div class="stat-pill progress" id="spProgress">✅ ${s.done}/${s.all} done</div>
-            <div class="stat-pill days" id="spDays">${tr.days.length} day${tr.days.length!==1?'s':''}</div>
+            <div class="stat-pill days" id="spDays">${tr.days.length} day${tr.days.length !== 1 ? 's' : ''}</div>
           </div>
         </div>
         <div class="hero-actions">
@@ -98,7 +98,7 @@ function renderMain() {
       </div>
     </div>
     <div class="days-area">
-      ${tr.days.map((d, i) => renderDay(d, i+1)).join('')}
+      ${tr.days.map((d, i) => renderDay(d, i + 1)).join('')}
       <button class="add-day-row" onclick="addDay()">＋ Add Day</button>
     </div>`;
 }
@@ -111,6 +111,8 @@ function renderDay(d, n) {
       <div class="day-head-middle">
         <input class="day-title-input" value="${esc(d.title)}" placeholder="Day title…"
           oninput="upDay('${d.id}','title',this.value)" />
+        <input class="day-city-input" value="${esc(d.city || '')}" placeholder="City (e.g. Paris)"
+          oninput="upDay('${d.id}','city',this.value)" />
         <input class="day-date-input" type="date" value="${d.date}"
           oninput="upDay('${d.id}','date',this.value)" />
       </div>
@@ -122,36 +124,37 @@ function renderDay(d, n) {
     <div class="hotel-strip">
       <span class="hotel-icon">🏨</span>
       <input class="h-in hn" placeholder="Hotel / Accommodation"
-        value="${esc(h.name||'')}" oninput="upHotel('${d.id}','name',this.value)" />
+        value="${esc(h.name || '')}" oninput="upHotel('${d.id}','name',this.value)" />
       <input class="h-in hc" type="number" placeholder="$/night"
-        value="${h.cost||''}" oninput="upHotel('${d.id}','cost',this.value)" />
+        value="${h.cost || ''}" oninput="upHotel('${d.id}','cost',this.value)" />
       <input class="h-in hk" placeholder="Confirmation #"
-        value="${esc(h.confirm||'')}" oninput="upHotel('${d.id}','confirm',this.value)" />
+        value="${esc(h.confirm || '')}" oninput="upHotel('${d.id}','confirm',this.value)" />
     </div>
     <div class="places-list" id="pl-${d.id}">
       ${d.places.map(p => renderPlace(d.id, p)).join('')}
     </div>
     <div class="day-foot">
       <button class="btn-sm btn-ghost-sm" onclick="addPlace('${d.id}')">＋ Add Place</button>
-      <button class="btn-sm btn-ai-sm" onclick="openAi('${d.id}')">✦ AI Suggest</button>
+      <button class="btn-sm btn-ai-sm" onclick="openAi('${d.id}')">✦ Advanced</button>
+      <button class="btn-sm btn-ai-sm" onclick="quickSuggest('${d.id}')">⚡ Quick AI</button>
     </div>
   </div>`;
 }
 
 function renderPlace(dayId, p) {
-  const cat = (p.category||'').replace(/\s/g,'');
-  return `<div class="place-row ${p.done?'done':''}" id="p-${p.id}">
-    <div class="chk ${p.done?'on':''}" onclick="toggleDone('${dayId}','${p.id}')">${p.done?'✓':''}</div>
+  const cat = (p.category || '').replace(/\s/g, '');
+  return `<div class="place-row ${p.done ? 'done' : ''}" id="p-${p.id}">
+    <div class="chk ${p.done ? 'on' : ''}" onclick="toggleDone('${dayId}','${p.id}')">${p.done ? '✓' : ''}</div>
     <div class="place-fields">
       <input class="p-in place-in-name" value="${esc(p.name)}" placeholder="Place name"
         oninput="upPlace('${dayId}','${p.id}','name',this.value)" />
-      <input class="p-in place-in-time" value="${esc(p.time||'')}" placeholder="⏰ Time"
+      <input class="p-in place-in-time" value="${esc(p.time || '')}" placeholder="⏰ Time"
         oninput="upPlace('${dayId}','${p.id}','time',this.value)" />
-      <input class="p-in place-in-dur" value="${esc(p.duration||'')}" placeholder="⌛ Duration"
+      <input class="p-in place-in-dur" value="${esc(p.duration || '')}" placeholder="⌛ Duration"
         oninput="upPlace('${dayId}','${p.id}','duration',this.value)" />
-      <input class="p-in place-in-cost" type="number" value="${p.cost||''}" placeholder="💰 Cost $"
+      <input class="p-in place-in-cost" type="number" value="${p.cost || ''}" placeholder="💰 Cost $"
         oninput="upPlace('${dayId}','${p.id}','cost',this.value)" />
-      <input class="p-in place-in-note" value="${esc(p.notes||'')}" placeholder="Notes…"
+      <input class="p-in place-in-note" value="${esc(p.notes || '')}" placeholder="Notes…"
         oninput="upPlace('${dayId}','${p.id}','notes',this.value)" />
     </div>
     ${cat ? `<span class="cat-tag cat-${cat}">${p.category}</span>` : ''}
@@ -162,18 +165,18 @@ function renderPlace(dayId, p) {
 // ──────────────────────────────────────────────
 //  TRIP CRUD
 // ──────────────────────────────────────────────
-function openNewTrip() { document.getElementById('newTripVeil').style.display='flex'; setTimeout(()=>document.getElementById('ntName').focus(),50); }
-function closeNewTrip() { document.getElementById('newTripVeil').style.display='none'; }
+function openNewTrip() { document.getElementById('newTripVeil').style.display = 'flex'; setTimeout(() => document.getElementById('ntName').focus(), 50); }
+function closeNewTrip() { document.getElementById('newTripVeil').style.display = 'none'; }
 
 function createTrip() {
   const name = document.getElementById('ntName').value.trim();
   const city = document.getElementById('ntCity').value.trim();
-  if (!name) { toast('Enter a trip name','err'); return; }
-  const tr = { id: uid(), name, city, startDate: document.getElementById('ntStart').value, endDate: document.getElementById('ntEnd').value, days: [] };
+  if (!name) { toast('Enter a trip name', 'err'); return; }
+  const tr = { id: uid(), name, startDate: document.getElementById('ntStart').value, endDate: document.getElementById('ntEnd').value, days: [] };
   trips.unshift(tr); activeId = tr.id;
   closeNewTrip();
-  ['ntName','ntCity','ntStart','ntEnd'].forEach(id => document.getElementById(id).value = '');
-  render(); toast('Trip created! 🎉','ok');
+  ['ntName', 'ntCity', 'ntStart', 'ntEnd'].forEach(id => document.getElementById(id).value = '');
+  render(); toast('Trip created! 🎉', 'ok');
 }
 function select(id) { activeId = id; render(); }
 function delTrip(e, id) {
@@ -194,7 +197,7 @@ function upTrip(f, v) {
 // ──────────────────────────────────────────────
 function addDay() {
   const tr = trip(); if (!tr) return;
-  tr.days.push({ id: uid(), title: '', date: '', hotel: {}, places: [] });
+  tr.days.push({ id: uid(), title: '', date: '', city: '', hotel: {}, places: [] });
   render();
 }
 function delDay(id) {
@@ -260,7 +263,7 @@ function refreshHeroStats() {
   const dy = document.getElementById('spDays');
   if (b) b.textContent = `💰 $${s.total} total`;
   if (p) p.textContent = `✅ ${s.done}/${s.all} done`;
-  if (dy) dy.textContent = `${tr.days.length} day${tr.days.length!==1?'s':''}`;
+  if (dy) dy.textContent = `${tr.days.length} day${tr.days.length !== 1 ? 's' : ''}`;
   renderSidebar();
 }
 
@@ -271,11 +274,17 @@ function openAi(dayId) {
   aiDayId = dayId;
   picks = { people: null, type: null, budget: null };
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-  document.getElementById('aiCity').textContent = trip()?.city || 'your city';
+  document.getElementById('aiCity').textContent =
+    day(dayId)?.city || trip()?.city || 'your destination';
   document.getElementById('aiVeil').style.display = 'flex';
 }
-function closeAi()    { document.getElementById('aiVeil').style.display='none'; }
-function closeAiRes() { document.getElementById('aiResVeil').style.display='none'; }
+function closeAi() { document.getElementById('aiVeil').style.display = 'none'; }
+function closeAiRes() { document.getElementById('aiResVeil').style.display = 'none'; }
+
+function quickSuggest(dayId) {
+  aiDayId = dayId;
+  fetchSuggestions(true);
+}
 
 function pick(group, val) {
   picks[group] = picks[group] === val ? null : val;
@@ -288,8 +297,8 @@ function pick(group, val) {
 
 async function fetchSuggestions(skip) {
   closeAi();
-  const city = trip()?.city;
-  if (!city) { toast('Set a destination city first','err'); return; }
+  const city = day(aiDayId)?.city || trip()?.city;
+  if (!city) { toast('Set a destination city first', 'err'); return; }
   suggestions = []; chosen = new Set();
   document.getElementById('aiResVeil').style.display = 'flex';
   document.getElementById('aiResSub').textContent = `Finding top spots in ${city}…`;
@@ -307,18 +316,17 @@ async function fetchSuggestions(skip) {
     suggestions = data.suggestions;
     document.getElementById('aiResSub').textContent = 'Select the places you want to add.';
     document.getElementById('btnAddSugg').style.display = '';
-    document.getElementById('aiResBody').innerHTML = `<div class="sugg-grid">${
-      suggestions.map((s, i) => `<div class="sugg-card" id="sc-${i}" onclick="toggleSugg(${i})">
+    document.getElementById('aiResBody').innerHTML = `<div class="sugg-grid">${suggestions.map((s, i) => `<div class="sugg-card" id="sc-${i}" onclick="toggleSugg(${i})">
         <div class="sugg-name">${esc(s.name)}</div>
         <div class="sugg-desc">${esc(s.description)}</div>
         <div class="sugg-meta">
-          <span class="cat-tag cat-${(s.category||'').replace(/\s/g,'')}">${s.category}</span>
+          <span class="cat-tag cat-${(s.category || '').replace(/\s/g, '')}">${s.category}</span>
           <span class="dur">⌛ ${s.duration}</span>
-          <span class="sugg-cost">${s.cost > 0 ? '$'+s.cost : 'Free'}</span>
+          <span class="sugg-cost">${s.cost > 0 ? '$' + s.cost : 'Free'}</span>
         </div>
       </div>`).join('')
-    }</div>`;
-  } catch(e) {
+      }</div>`;
+  } catch (e) {
     document.getElementById('aiResBody').innerHTML = `<div style="padding:32px;text-align:center;color:var(--coral);"><div style="font-size:36px;margin-bottom:12px;">⚠️</div>Couldn't reach Gemini. Make sure <strong>GEMINI_API_KEY</strong> is set.</div>`;
   }
 }
@@ -329,14 +337,14 @@ function toggleSugg(i) {
 }
 
 function addSuggestions() {
-  if (!chosen.size) { toast('Select at least one place','err'); return; }
+  if (!chosen.size) { toast('Select at least one place', 'err'); return; }
   const d = day(aiDayId); if (!d) return;
   chosen.forEach(i => {
     const s = suggestions[i];
-    d.places.push({ id: uid(), name: s.name, time: '', duration: s.duration, cost: s.cost||'', notes: s.description, done: false, category: s.category||'' });
+    d.places.push({ id: uid(), name: s.name, time: '', duration: s.duration, cost: s.cost || '', notes: s.description, done: false, category: s.category || '' });
   });
   closeAiRes(); render();
-  toast(`Added ${chosen.size} place${chosen.size>1?'s':''}! ✦`, 'ok');
+  toast(`Added ${chosen.size} place${chosen.size > 1 ? 's' : ''}! ✦`, 'ok');
 }
 
 // ──────────────────────────────────────────────
@@ -381,7 +389,7 @@ function downloadPDF() {
   doc.setFontSize(9);
   doc.setTextColor(180, 185, 200);
   let metaY = 26 + nameH - 2;
-  if (tr.city)      doc.text(`📍 ${tr.city}`, margin, metaY);
+  if (tr.city) doc.text(`📍 ${tr.city}`, margin, metaY);
   if (tr.startDate) doc.text(`📅 ${tr.startDate}  →  ${tr.endDate || '?'}`, margin + (tr.city ? 55 : 0), metaY);
 
   y = 66;
@@ -415,7 +423,7 @@ function downloadPDF() {
     doc.text(`${di + 1}`, margin + 3.5, y + 8);
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(10);
-    const dayLabel = d.title ? `Day ${di+1} — ${d.title}` : `Day ${di+1}`;
+    const dayLabel = d.title ? `Day ${di + 1} — ${d.title}` : `Day ${di + 1}`;
     doc.text(dayLabel, margin + 14, y + 8);
     if (d.date) {
       doc.setFont('helvetica', 'normal');
@@ -537,9 +545,9 @@ function downloadPDF() {
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(8);
   doc.setTextColor(160, 155, 145);
-  doc.text('Generated by WanderPlan ✦  wanderplan.app', W/2, 292, { align: 'center' });
+  doc.text('Generated by WanderPlan ✦  wanderplan.app', W / 2, 292, { align: 'center' });
 
-  doc.save(`${(tr.name||'trip').replace(/[^a-z0-9]/gi,'_')}.pdf`);
+  doc.save(`${(tr.name || 'trip').replace(/[^a-z0-9]/gi, '_')}.pdf`);
   toast('PDF downloaded 📄', 'ok');
 }
 
@@ -549,9 +557,9 @@ function downloadPDF() {
 function toast(msg, type = 'ok') {
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  t.innerHTML = `<span class="toast-icon">${type==='ok'?'✓':'!'}</span>${msg}`;
+  t.innerHTML = `<span class="toast-icon">${type === 'ok' ? '✓' : '!'}</span>${msg}`;
   document.body.appendChild(t);
-  setTimeout(() => { t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 2800);
+  setTimeout(() => { t.style.transition = 'opacity .3s'; t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2800);
 }
 
 // ──────────────────────────────────────────────
@@ -559,7 +567,7 @@ function toast(msg, type = 'ok') {
 // ──────────────────────────────────────────────
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { closeNewTrip(); closeAi(); closeAiRes(); }
-  if (e.key === 'Enter' && document.getElementById('newTripVeil').style.display==='flex') createTrip();
+  if (e.key === 'Enter' && document.getElementById('newTripVeil').style.display === 'flex') createTrip();
 });
 
 // ──────────────────────────────────────────────
