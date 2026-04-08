@@ -447,7 +447,7 @@ function downloadPDF() {
       let hotelTxt = d.hotel.name;
       if (d.hotel.cost) hotelTxt += `  ·  $${d.hotel.cost}/night`;
       if (d.hotel.confirm) hotelTxt += `  ·  Conf# ${d.hotel.confirm}`;
-      doc.text(hotelTxt, margin + 8, y + 6);
+      doc.text(hotelTxt, margin + 20, y + 6);
       // Day total right
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(196, 90, 62);
@@ -472,7 +472,10 @@ function downloadPDF() {
     } else {
       d.places.forEach((p, pi) => {
         checkPage(12);
-        const rowH = p.notes ? 13 : 9;
+        let rowH = 12; // base height
+
+        if (p.time || p.duration) rowH += 4;   // extra line
+        if (p.notes) rowH += 5;               // notes line
         const bg = pi % 2 === 0 ? [252, 250, 247] : [255, 255, 255];
         doc.setFillColor(...bg);
         doc.rect(margin, y, contentW, rowH, 'F');
@@ -493,7 +496,7 @@ function downloadPDF() {
         doc.setFont('helvetica', p.done ? 'normal' : 'bold');
         doc.setFontSize(9);
         doc.setTextColor(p.done ? 130 : 26, p.done ? 135 : 28, p.done ? 150 : 40);
-        const nameW = contentW - 70;
+        const nameW = contentW - 85;
         const pName = doc.splitTextToSize(p.name || 'Unnamed', nameW)[0];
         doc.text(pName, margin + 10, y + 6.5);
 
