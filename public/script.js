@@ -275,7 +275,7 @@ function openAi(dayId) {
   picks = { people: null, type: null, budget: null };
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
   document.getElementById('aiCity').textContent =
-    day(dayId)?.city || trip()?.city || 'your destination';
+    day(dayId)?.city || trip()?.days[0]?.city || 'your destination';
   document.getElementById('aiVeil').style.display = 'flex';
 }
 function closeAi() { document.getElementById('aiVeil').style.display = 'none'; }
@@ -297,7 +297,7 @@ function pick(group, val) {
 
 async function fetchSuggestions(skip) {
   closeAi();
-  const city = day(aiDayId)?.city || trip()?.city;
+  const city = day(aiDayId)?.city || trip()?.days[0]?.city;
   if (!city) { toast('Set a destination city first', 'err'); return; }
   suggestions = []; chosen = new Set();
   document.getElementById('aiResVeil').style.display = 'flex';
