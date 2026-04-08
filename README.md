@@ -1,5 +1,7 @@
 # ✦ WanderPlan
 
+Link: [https://wander-plan-bice.vercel.app/](https://wander-plan-bice.vercel.app/)
+
 AI-powered trip planner — days, hotels, places, costs, and Gemini-powered recommendations.
 
 ## Stack
